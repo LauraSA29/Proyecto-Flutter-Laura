@@ -1,16 +1,22 @@
-# trabajo_final
+Creado por Laura Salas Ávila
+# <u>Trabajo final Flutter MasterD</u>
 
-A new Flutter project.
+Este es un proyecto de flutter para calificar, explicaré un poco de qué va a el proyecto y sus partes más importantes en este documento.
+[TOC]
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+## 1. Conceptualización
+### 1.1 ¿Cómo va a ser la app?¿De qué va la app?
 
-A few resources to get you started if this is your first Flutter project:
+## 2. Diseño
+### 2.1 ¿Diseño de la app?¿Dónde se diseñó?
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 3. Programación
+### 3.1 Estructura del código
+### 3.2 Elementos Implementados
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 4. Elementos destacables del desarrollo
+### 4.1 Cosas del curso usadas
+
+
+
