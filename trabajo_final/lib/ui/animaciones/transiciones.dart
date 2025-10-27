@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Transiciones {
+
+  // transición para deslizar
   static Route crearRutaSlide(Widget pantalla) {
     return PageRouteBuilder(
       transitionDuration: const Duration(milliseconds: 500),
@@ -22,7 +24,7 @@ class Transiciones {
     );
   }
 
-  // 🔸 Transición tipo fade (desvanecido)
+  // transición desvanecerse
   static Route crearRutaFade(Widget pantalla) {
     return PageRouteBuilder(
       transitionDuration: const Duration(milliseconds: 400),
@@ -36,7 +38,7 @@ class Transiciones {
     );
   }
 
-  // 🔸 Transición combinada (fade + scale)
+  // transición combinada con el zoom
   static Route crearRutaZoom(Widget pantalla) {
     return PageRouteBuilder(
       transitionDuration: const Duration(milliseconds: 450),

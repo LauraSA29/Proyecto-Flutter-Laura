@@ -44,7 +44,7 @@ class _PantallaCarritoState extends State<PantallaCarrito> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 65,
+        toolbarHeight: 60,
         title: const Text(
           "¡TU CARRITO!",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

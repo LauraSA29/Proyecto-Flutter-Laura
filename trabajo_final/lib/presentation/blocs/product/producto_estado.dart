@@ -11,6 +11,7 @@ class ProductoCargado extends ProductoEstado {
   ProductoCargado(this.productos);
 }
 
+//en caso de error
 class ProductoError extends ProductoEstado {
   final String msg;
   ProductoError(this.msg);

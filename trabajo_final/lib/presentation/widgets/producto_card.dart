@@ -5,18 +5,14 @@ import 'package:trabajo_final/presentation/screens/detalle_producto.dart';
 class ProductoCard extends StatelessWidget {
   final Producto producto;
 
+ // carta de producto para añadir al carrito
   const ProductoCard({super.key, required this.producto});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PantallaDetalleProducto(producto: producto),
-          ),
-        );
+        Navigator.of(context).push(_crearRutaDetalle(producto));
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -27,19 +23,26 @@ class ProductoCard extends StatelessWidget {
           ),
         ),
         elevation: 3,
+        shadowColor: Colors.black.withOpacity(0.1),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Imagen del producto
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-                child: Image.asset(
-                  producto.foto,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(15)),
+                child: Hero(
+                  tag: producto.foto, // animación entre pantallas
+                  child: Image.asset(
+                    producto.foto,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  ),
                 ),
               ),
             ),
+            // Nombre del producto
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
@@ -47,6 +50,7 @@ class ProductoCard extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
+            // Precio del producto 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
@@ -58,6 +62,31 @@ class ProductoCard extends StatelessWidget {
           ],
         ),
       ),
-    );  
+    );
+  }
+
+  // Ruta personalizada con animación
+  Route _crearRutaDetalle(Producto producto) {
+    return PageRouteBuilder(
+      transitionDuration: const Duration(milliseconds: 400),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          PantallaDetalleProducto(producto: producto),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final scaleAnimation = Tween<double>(begin: 0.9, end: 1.0).animate(
+          CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+        );
+        final fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(parent: animation, curve: Curves.easeIn),
+        );
+
+        return FadeTransition(
+          opacity: fadeAnimation,
+          child: ScaleTransition(
+            scale: scaleAnimation,
+            child: child,
+          ),
+        );
+      },
+    );
   }
 }

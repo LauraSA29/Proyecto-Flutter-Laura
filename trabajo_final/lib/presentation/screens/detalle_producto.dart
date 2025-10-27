@@ -22,14 +22,21 @@ class _PantallaDetalleProductoState extends State<PantallaDetalleProducto> {
 
   @override
   Widget build(BuildContext context) {
+    // Altura que dejamos para que el contenido no quede bajo la AppBar transparente
+    final double topSpacing = kToolbarHeight + 20;
+
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         toolbarHeight: 65,
         title: Text(
           widget.producto.nombre.toUpperCase(),
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
+            letterSpacing: 1,
           ),
         ),
         centerTitle: true,
@@ -37,20 +44,34 @@ class _PantallaDetalleProductoState extends State<PantallaDetalleProducto> {
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Color(0xFF7B6CF6), Color(0xFFE96FFF)],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
         ),
       ),
+
+      // Usamos Stack para poner primero el fondo (gradiente + figuras) y encima el contenido
       body: Stack(
         children: [
+          // Degradado general de fondo
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFF5EFFF), Color(0xFFFFFFFF)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+
+          // Figuras decorativas (círculos/rect)
           Positioned(
-            top: -40,
+            top: -60,
             left: -50,
             child: Container(
-              width: 160,
-              height: 160,
+              width: 180,
+              height: 180,
               decoration: const BoxDecoration(
                 color: Color(0xFFBBA8FF),
                 shape: BoxShape.circle,
@@ -58,11 +79,11 @@ class _PantallaDetalleProductoState extends State<PantallaDetalleProducto> {
             ),
           ),
           Positioned(
-            top: 200,
+            top: 220,
             right: -70,
             child: Container(
-              width: 180,
-              height: 180,
+              width: 200,
+              height: 200,
               decoration: const BoxDecoration(
                 color: Color(0xFFF3B7FF),
                 shape: BoxShape.circle,
@@ -70,11 +91,11 @@ class _PantallaDetalleProductoState extends State<PantallaDetalleProducto> {
             ),
           ),
           Positioned(
-            bottom: -80,
-            left: 30,
+            bottom: -100,
+            left: 40,
             child: Container(
-              width: 220,
-              height: 220,
+              width: 240,
+              height: 240,
               decoration: const BoxDecoration(
                 color: Color(0xFFD5C4FF),
                 shape: BoxShape.circle,
@@ -87,7 +108,7 @@ class _PantallaDetalleProductoState extends State<PantallaDetalleProducto> {
             child: Transform.rotate(
               angle: 0.4,
               child: Opacity(
-                opacity: 0.5,
+                opacity: 0.45,
                 child: Container(
                   width: 120,
                   height: 120,
@@ -100,200 +121,194 @@ class _PantallaDetalleProductoState extends State<PantallaDetalleProducto> {
             ),
           ),
 
+          // Contenido principal (por encima del fondo)
           SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.fromLTRB(20, topSpacing, 20, 30),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 10),
+                // Imagen con marco suave + Hero
+                Hero(
+                  tag: '${widget.producto.id ?? widget.producto.nombre}',
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      child: Image.asset(
+                        widget.producto.foto,
+                        fit: BoxFit.cover,
+                        height: 270,
+                        width: double.infinity,
+                        errorBuilder: (context, error, stackTrace) {
+                          // placeholder si falta la imagen
+                          return Container(
+                            height: 270,
+                            color: Colors.grey.shade200,
+                            alignment: Alignment.center,
+                            child: const Icon(Icons.image_not_supported, size: 72, color: Colors.grey),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
 
+                const SizedBox(height: 28),
+
+                // Tarjeta de información principal
                 Container(
+                  width: double.infinity,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(25),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
                       ),
                     ],
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset(
-                      widget.producto.foto,
-                      fit: BoxFit.cover,
-                      height: 260,
-                      width: double.infinity,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                Text(
-                  widget.producto.nombre,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  '${widget.producto.precio.toStringAsFixed(2)} €',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    color: Colors.green,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 25),
-
-                const Text(
-                  'Número de unidades:',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                Slider(
-                  value: cantidad.toDouble(),
-                  min: 1,
-                  max: 10,
-                  divisions: 9,
-                  label: '$cantidad',
-                  activeColor: const Color(0xFF7B6CF6),
-                  onChanged: (value) {
-                    setState(() => cantidad = value.toInt());
-                  },
-                ),
-                Text(
-                  'Cantidad: $cantidad',
-                  style: const TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 20),
-
-                const Text(
-                  'Talla:',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: tallas.map((talla) {
-                    final seleccionada = talla == tallaSeleccionada;
-                    return GestureDetector(
-                      onTap: () => setState(() => tallaSeleccionada = talla),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        margin: const EdgeInsets.symmetric(horizontal: 6),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: seleccionada
-                              ? const Color(0xFF7B6CF6)
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: seleccionada
-                                ? const Color(0xFF7B6CF6)
-                                : Colors.grey.shade400,
-                            width: 1.5,
-                          ),
-                          boxShadow: seleccionada
-                              ? [
-                                  BoxShadow(
-                                    color:
-                                        const Color(0xFF7B6CF6).withOpacity(0.3),
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ]
-                              : [],
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  child: Column(
+                    children: [
+                      Text(
+                        widget.producto.nombre,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.3,
                         ),
-                        child: Text(
-                          talla.toString(),
-                          style: TextStyle(
-                            color: seleccionada ? Colors.white : Colors.black,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        '${widget.producto.precio.toStringAsFixed(2)} €',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Color(0xFF43A047),
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    );
-                  }).toList(),
-                ),
+                      const SizedBox(height: 18),
 
-                const SizedBox(height: 25),
+                      // Cantidad
+                      _seccionTitulo('Cantidad'),
+                      const SizedBox(height: 8),
+                      Slider(
+                        value: cantidad.toDouble(),
+                        min: 1,
+                        max: 10,
+                        divisions: 9,
+                        label: '$cantidad',
+                        activeColor: const Color(0xFF7B6CF6),
+                        onChanged: (value) => setState(() => cantidad = value.toInt()),
+                      ),
+                      Text('Cantidad: $cantidad', style: const TextStyle(fontSize: 15, color: Colors.black87)),
+                      const SizedBox(height: 16),
 
-                const Text(
-                  'Color:',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: colores.map((color) {
-                    final seleccionada = color == colorSeleccionado;
-                    return GestureDetector(
-                      onTap: () => setState(() => colorSeleccionado = color),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        margin: const EdgeInsets.symmetric(horizontal: 6),
-                        width: 35,
-                        height: 35,
-                        decoration: BoxDecoration(
-                          color: color,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: seleccionada
-                                ? Colors.black
-                                : Colors.grey.shade300,
-                            width: seleccionada ? 2 : 1,
+                      // Tallas
+                      _seccionTitulo('Talla'),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: tallas.map((talla) {
+                          final seleccionada = talla == tallaSeleccionada;
+                          return GestureDetector(
+                            onTap: () => setState(() => tallaSeleccionada = talla),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              margin: const EdgeInsets.symmetric(horizontal: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: seleccionada ? const Color(0xFF7B6CF6) : Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: seleccionada ? const Color(0xFF7B6CF6) : Colors.grey.shade400,
+                                  width: 1.5,
+                                ),
+                                boxShadow: seleccionada
+                                    ? [BoxShadow(color: const Color(0xFF7B6CF6).withOpacity(0.35), blurRadius: 8, offset: const Offset(0, 3))]
+                                    : [],
+                              ),
+                              child: Text(
+                                talla.toString(),
+                                style: TextStyle(color: seleccionada ? Colors.white : Colors.black87, fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+
+                      const SizedBox(height: 18),
+
+                      // Colores
+                      _seccionTitulo('Color'),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: colores.map((color) {
+                          final seleccionada = color == colorSeleccionado;
+                          return GestureDetector(
+                            onTap: () => setState(() => colorSeleccionado = color),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              margin: const EdgeInsets.symmetric(horizontal: 8),
+                              width: 38,
+                              height: 38,
+                              decoration: BoxDecoration(
+                                color: color,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: seleccionada ? Colors.black : Colors.grey.shade300, width: seleccionada ? 2 : 1),
+                                boxShadow: seleccionada ? [BoxShadow(color: color.withOpacity(0.45), blurRadius: 10, spreadRadius: 2)] : [],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Botón añadir
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF7B6CF6),
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                elevation: 6,
+                                shadowColor: const Color(0xFF7B6CF6).withOpacity(0.35),
+                              ),
+                              icon: const Icon(Icons.add_shopping_cart),
+                              label: const Text('AÑADIR AL CARRITO', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                              onPressed: () async {
+                                for (int i = 0; i < cantidad; i++) {
+                                  await DB.insertarEnCarrito(widget.producto);
+                                }
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('${widget.producto.nombre} añadido al carrito 🛍️'), duration: const Duration(seconds: 2)),
+                                );
+                              },
+                            ),
                           ),
-                          boxShadow: seleccionada
-                              ? [
-                                  BoxShadow(
-                                    color: color.withOpacity(0.4),
-                                    blurRadius: 8,
-                                    spreadRadius: 1,
-                                  )
-                                ]
-                              : [],
-                        ),
+                        ],
                       ),
-                    );
-                  }).toList(),
+                    ],
+                  ),
                 ),
 
-                const SizedBox(height: 40),
-
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF7B6CF6),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 14),
-                    elevation: 5,
-                  ),
-                  icon: const Icon(Icons.add_shopping_cart),
-                  label: const Text(
-                    'AÑADIR AL CARRITO',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  onPressed: () async {
-                    for (int i = 0; i < cantidad; i++) {
-                      await DB.insertarEnCarrito(widget.producto);
-                    }
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            '${widget.producto.nombre} añadido al carrito 🛍️'),
-                        duration: const Duration(seconds: 2),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 36),
               ],
             ),
           ),
@@ -301,4 +316,13 @@ class _PantallaDetalleProductoState extends State<PantallaDetalleProducto> {
       ),
     );
   }
+
+  Widget _seccionTitulo(String texto) => Text(
+        texto,
+        style: const TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF5C4DDC),
+        ),
+      );
 }

@@ -13,6 +13,7 @@ class Producto {
     required this.categoria,
   });
 
+  // Convertir el objeto de Producto a un mapa para almacenar en la base de datos
   Map<String, dynamic> toMap() {
     final map = <String, dynamic>{
       'nombre': nombre,
@@ -28,6 +29,7 @@ class Producto {
     return map;
   }
 
+  // Crear una instancia de Producto a partir de un mapa
   factory Producto.fromMap(Map<String, dynamic> map) {
     return Producto(
       id: map['id'] is int ? map['id'] as int : int.tryParse(map['id'].toString()),
