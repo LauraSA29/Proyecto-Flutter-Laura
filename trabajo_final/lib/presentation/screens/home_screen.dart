@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:trabajo_final/presentation/blocs/product/producto_bloc.dart';
 import 'package:trabajo_final/presentation/blocs/product/producto_evento.dart';
 import 'package:trabajo_final/presentation/blocs/product/producto_estado.dart';
 import 'package:trabajo_final/presentation/widgets/producto_card.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:trabajo_final/presentation/widgets/fondo_decorativo.dart';
+
 import 'shopping_cart.dart';
 import 'profile.dart';
 
@@ -19,6 +21,7 @@ class _PantallaInicioState extends State<PantallaInicio> {
   int _selectedIndex = 0;
   late final ProductoBloc _productoBloc;
 
+//cargar el bloc de productos
   @override
   void initState() {
     super.initState();
@@ -30,12 +33,13 @@ class _PantallaInicioState extends State<PantallaInicio> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _pantallas.clear();
-    _pantallas.addAll([
-      const _PantallaHome(),
-      const PantallaCarrito(),
-      const PantallaPerfil(),
-    ]);
+    _pantallas
+      ..clear()
+      ..addAll([
+        const _PantallaHome(),
+        const PantallaCarrito(),
+        const PantallaPerfil(),
+      ]);
   }
 
   void _onItemTapped(int index) {
@@ -43,6 +47,7 @@ class _PantallaInicioState extends State<PantallaInicio> {
     setState(() => _selectedIndex = index);
   }
 
+// construir la navegación 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -51,7 +56,7 @@ class _PantallaInicioState extends State<PantallaInicio> {
         body: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
           transitionBuilder: (child, animation) {
-            final inFromRight = Tween<Offset>(
+            final slide = Tween<Offset>(
               begin: const Offset(0.2, 0),
               end: Offset.zero,
             ).animate(animation);
@@ -62,7 +67,7 @@ class _PantallaInicioState extends State<PantallaInicio> {
             );
 
             return SlideTransition(
-              position: inFromRight,
+              position: slide,
               child: FadeTransition(opacity: fade, child: child),
             );
           },
@@ -97,7 +102,7 @@ class _PantallaInicioState extends State<PantallaInicio> {
   }
 }
 
-// 🔹 HOME PRINCIPAL
+// pantalla principal
 class _PantallaHome extends StatefulWidget {
   const _PantallaHome();
 
@@ -105,6 +110,7 @@ class _PantallaHome extends StatefulWidget {
   State<_PantallaHome> createState() => _PantallaHomeState();
 }
 
+// estado de la pantalla principal
 class _PantallaHomeState extends State<_PantallaHome> {
   String categoriaSeleccionada = "Todos";
   String busqueda = "";
@@ -118,6 +124,7 @@ class _PantallaHomeState extends State<_PantallaHome> {
     }
   }
 
+// construir la pantalla principal
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,191 +145,126 @@ class _PantallaHomeState extends State<_PantallaHome> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          // 🔹 Fondo decorativo
-          Positioned(
-            top: -40,
-            left: -50,
-            child: Container(
-              width: 160,
-              height: 160,
-              decoration: const BoxDecoration(
-                color: Color(0xFFBBA8FF),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            top: 200,
-            right: -70,
-            child: Container(
-              width: 180,
-              height: 180,
-              decoration: const BoxDecoration(
-                color: Color(0xFFF3B7FF),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -80,
-            left: 30,
-            child: Container(
-              width: 220,
-              height: 220,
-              decoration: const BoxDecoration(
-                color: Color(0xFFD5C4FF),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 140,
-            right: 30,
-            child: Transform.rotate(
-              angle: 0.4,
-              child: Opacity(
-                opacity: 0.5,
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF3B7FF).withOpacity(0.6),
-                    borderRadius: BorderRadius.circular(20),
+      body: FondoDecorativo(
+        child: BlocBuilder<ProductoBloc, ProductoEstado>(
+          builder: (context, state) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 🔹 Buscador
+                  TextField(
+                    onChanged: (valor) {
+                      setState(() => busqueda = valor);
+                      context.read<ProductoBloc>().add(
+                            FiltrarProductosPorNombre(valor.trim()),
+                          );
+                    },
+                    decoration: InputDecoration(
+                      hintText: "Buscar ropa...", //buscador
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ),
-          ),
+                  const SizedBox(height: 20),
 
-          // 🔹 Contenido principal
-          BlocBuilder<ProductoBloc, ProductoEstado>(
-            builder: (context, state) {
-              return SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Buscador
-                      TextField(
-                        onChanged: (valor) {
-                          setState(() => busqueda = valor);
-                          context
-                              .read<ProductoBloc>()
-                              .add(FiltrarProductosPorNombre(valor.trim()));
-                        },
-                        decoration: InputDecoration(
-                          hintText: "Buscar ropa...",
-                          prefixIcon: const Icon(Icons.search),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                  // categorías
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _CategoriaItem(
+                          icono: Icons.all_inclusive,
+                          etiqueta: "Todos",
+                          seleccionado: categoriaSeleccionada == "Todos",
+                          onTap: () => _filtrar(context, "Todos"),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Categorías
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _CategoriaItem(
-                              icono: Icons.all_inclusive,
-                              etiqueta: "Todos",
-                              seleccionado: categoriaSeleccionada == "Todos",
-                              onTap: () => _filtrar(context, "Todos"),
-                            ),
-                            _CategoriaItem(
-                              icono: MdiIcons.tshirtCrew,
-                              etiqueta: "Camisas",
-                              seleccionado: categoriaSeleccionada == "Camisas",
-                              onTap: () => _filtrar(context, "Camisas"),
-                            ),
-                            _CategoriaItem(
-                              icono: MdiIcons.hanger,
-                              etiqueta: "Pantalones",
-                              seleccionado:
-                                  categoriaSeleccionada == "Pantalones",
-                              onTap: () => _filtrar(context, "Pantalones"),
-                            ),
-                            _CategoriaItem(
-                              icono: MdiIcons.shoeSneaker,
-                              etiqueta: "Zapatos",
-                              seleccionado: categoriaSeleccionada == "Zapatos",
-                              onTap: () => _filtrar(context, "Zapatos"),
-                            ),
-                            _CategoriaItem(
-                              icono: MdiIcons.bagPersonal,
-                              etiqueta: "Bolsos",
-                              seleccionado: categoriaSeleccionada == "Bolsos",
-                              onTap: () => _filtrar(context, "Bolsos"),
-                            ),
-                            _CategoriaItem(
-                              icono: MdiIcons.hatFedora,
-                              etiqueta: "Sombreros",
-                              seleccionado:
-                                  categoriaSeleccionada == "Sombreros",
-                              onTap: () => _filtrar(context, "Sombreros"),
-                            ),
-                            _CategoriaItem(
-                              icono: MdiIcons.watch,
-                              etiqueta: "Accesorios",
-                              seleccionado:
-                                  categoriaSeleccionada == "Accesorios",
-                              onTap: () => _filtrar(context, "Accesorios"),
-                            ),
-                          ],
+                        _CategoriaItem(
+                          icono: MdiIcons.tshirtCrew,
+                          etiqueta: "Camisas",
+                          seleccionado: categoriaSeleccionada == "Camisas",
+                          onTap: () => _filtrar(context, "Camisas"),
                         ),
-                      ),
-                      const SizedBox(height: 30),
-
-                      const Text(
-                        "Recomendados para ti",
-                        style:
-                            TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 10),
-
-                      // Productos
-                      if (state is ProductoCarga)
-                        const Center(child: CircularProgressIndicator())
-                      else if (state is ProductoCargado)
-                        GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.75,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10,
-                          ),
-                          itemCount: state.productos.length,
-                          itemBuilder: (context, index) {
-                            return ProductoCard(
-                                producto: state.productos[index]);
-                          },
-                        )
-                      else if (state is ProductoError)
-                        Center(child: Text(state.msg))
-                      else
-                        const SizedBox(),
-                    ],
+                        _CategoriaItem(
+                          icono: MdiIcons.hanger,
+                          etiqueta: "Pantalones",
+                          seleccionado: categoriaSeleccionada == "Pantalones",
+                          onTap: () => _filtrar(context, "Pantalones"),
+                        ),
+                        _CategoriaItem(
+                          icono: MdiIcons.shoeSneaker,
+                          etiqueta: "Zapatos",
+                          seleccionado: categoriaSeleccionada == "Zapatos",
+                          onTap: () => _filtrar(context, "Zapatos"),
+                        ),
+                        _CategoriaItem(
+                          icono: MdiIcons.bagPersonal,
+                          etiqueta: "Bolsos",
+                          seleccionado: categoriaSeleccionada == "Bolsos",
+                          onTap: () => _filtrar(context, "Bolsos"),
+                        ),
+                        _CategoriaItem(
+                          icono: MdiIcons.hatFedora,
+                          etiqueta: "Sombreros",
+                          seleccionado: categoriaSeleccionada == "Sombreros",
+                          onTap: () => _filtrar(context, "Sombreros"),
+                        ),
+                        _CategoriaItem(
+                          icono: MdiIcons.watch,
+                          etiqueta: "Accesorios",
+                          seleccionado: categoriaSeleccionada == "Accesorios",
+                          onTap: () => _filtrar(context, "Accesorios"),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-        ],
+                  const SizedBox(height: 30),
+
+                  const Text(
+                    "Recomendados para ti",
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // productos
+                  if (state is ProductoCarga)
+                    const Center(child: CircularProgressIndicator())
+                  else if (state is ProductoCargado)
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.75,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                      ),
+                      itemCount: state.productos.length,
+                      itemBuilder: (context, index) {
+                        return ProductoCard(producto: state.productos[index]);
+                      },
+                    )
+                  else if (state is ProductoError)
+                    Center(child: Text(state.msg))
+                  else
+                    const SizedBox(),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
 }
 
-// 🔹 Widget de categoría con animación
+// widget de categoría con animación
 class _CategoriaItem extends StatefulWidget {
   final IconData icono;
   final String etiqueta;
